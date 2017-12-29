@@ -30,7 +30,7 @@ def read_lines_in_file(filename):
 def concat_files(dirname):
     return (
         Stream(os.listdir(dirname))
-            .sort
+            .sort()
             .map(lambda fname: f"{dirname}/{fname}")
             .bind(read_lines_in_file)
     )

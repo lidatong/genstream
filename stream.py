@@ -17,55 +17,90 @@ class Stream(Generic[A]):
     def of(*args: A):
         return Stream(args)
 
+    def head(self):
+        return next(self)
+
+    def tail(self):
+        next(self)
+        return self
+
     def map(self, f: Callable[[A], B]) -> 'Stream[B]':
-        return Stream(map(f, self.xs))
+        return Stream(map(f, self))
 
     def filter(self, p: Callable[[A], bool]) -> 'Stream[A]':
-        return Stream(filter(p, self.xs))
+        return Stream(filter(p, self))
 
     def bind(self, f: Callable[[A], 'Stream[B]']) -> 'Stream[B]':
-        return Stream(chain.from_iterable(map(f, self.xs)))
+        return Stream(chain.from_iterable(map(f, self)))
 
-    def reduce(self, f: Callable[[A], 'Stream[B]']) -> 'Stream[B]':
-        return Stream(reduce(f, self.xs))
+    def reduce(self, f: Callable[[A, 'Stream[B]'], 'B']) -> 'B':
+        return reduce(f, self.xs)
+
+    def concat(self, ys):
+        return Stream(chain(self, ys))
 
     def take(self, n: int) -> 'Stream[A]':
-        return Stream(islice(self.xs, n))
+        return Stream(islice(self, n))
 
     def drop(self, n: int) -> 'Stream[A]':
-        return Stream(islice(self.xs, n, None))
+        return Stream(islice(self, n, None))
 
     def takewhile(self, p: Callable[[A], bool]) -> 'Stream[A]':
-        return Stream(takewhile(p, self.xs))
+        return Stream(takewhile(p, self))
 
     def dropwhile(self, p: Callable[[A], bool]) -> 'Stream[A]':
-        return Stream(dropwhile(p, self.xs))
+        return Stream(dropwhile(p, self))
 
-    def collect(self, to: Callable[[Iterable[A]], Iterable[A]]) -> Iterable[A]:
-        return to(list(self.xs))
+    # Key functions reserved for situations in which a preceding .map to the op
+    # would not evaluate to the same result
 
-    @property
     def sort(self, key=None):
-        return Stream(sorted(self.xs, key=key))
+        return Stream(sorted(self, key=key))
 
-    @property
-    def count(self):
-        return sum(1 for x in self.xs)
+    # built-ins max/min don't handle key=None properly
 
-    @property
-    def sum(self):
-        return sum(self.xs)
-
-    @property
     def max(self, key=None):
-        return max(self.xs, key=key)
+        key = (lambda x: x) if key is None else key
+        return Stream(max(self, key=key))
 
-    @property
+    def min(self, key=None):
+        key = (lambda x: x) if key is None else key
+        return Stream(min(self, key=key))
+
     def distinct(self, key=None):
         key = (lambda x: x) if key is None else key
-        S = set()
-        for x in self.xs:
-            key_x = key(x)
-            if key_x not in S:
-                yield x
-            S.add(key_x)
+
+        def g():
+            S = set()
+            for x in self:
+                key_x = key(x)
+                if key_x not in S:
+                    yield x
+                S.add(key_x)
+
+        return Stream(g())
+
+    # Terminal operations
+
+    def collect(self, to: Callable[[Iterable[A]], Iterable[A]]) -> Iterable[A]:
+        return to(self)
+
+    def sum(self):
+        return sum(self)
+
+    def any(self):
+        return any(self)
+
+    def all(self):
+        return all(self)
+
+    def count(self):
+        return sum(1 for x in self)
+
+
+if __name__ == '__main__':
+    print(Stream.of(1, 2, 3).concat(Stream.of(4, 5, 6)).collect(list))
+    print(Stream.of(1, 2, 3).reduce(max))
+    print(Stream.of(1, 2, 3).count())
+    print(Stream.of(1, 2, 3).max())
+    print(Stream.of(1, 5, 2, 2).distinct().collect(list))
