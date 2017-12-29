@@ -1,0 +1,2 @@
+Now we're in the first line of file b
+Second line of b
