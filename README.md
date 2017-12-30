@@ -5,7 +5,7 @@
 `pip install genstream`
 
 ```python
-from genstream.stream import Stream
+from genstream import Stream
 
 
 def main():
@@ -43,7 +43,7 @@ prefer the infix method syntax when sequencing operations on a group of elements
 ```python
 # Located under examples/concat_files.py
 import os
-from genstream.stream import Stream
+from genstream import Stream
 
 
 def read_lines_in_file(filename):

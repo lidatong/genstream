@@ -1,6 +1,6 @@
 # Located under examples/concat_files.py
 import os
-from genstream.stream import Stream
+from genstream import Stream
 
 
 def read_lines_in_file(filename):
