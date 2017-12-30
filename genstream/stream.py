@@ -1,4 +1,10 @@
-from itertools import (takewhile, dropwhile, chain, islice)
+from itertools import (takewhile,
+                       dropwhile,
+                       chain,
+                       islice,
+                       tee,
+                       filterfalse,
+                       zip_longest)
 from functools import reduce
 from typing import Iterable, Callable, TypeVar, Generic
 
@@ -7,8 +13,11 @@ B = TypeVar("B")
 
 
 class Stream(Generic[A]):
-    def __init__(self, xs: Iterable[A]):
-        self.xs = xs
+    def __init__(self, *args):
+        if len(args) == 1 and isinstance(args[0], Iterable):
+            self.xs = args[0]
+        else:
+            self.xs = iter(args)
 
     def __iter__(self) -> Iterable[A]:
         yield from self.xs
@@ -21,8 +30,7 @@ class Stream(Generic[A]):
         return next(self.xs)
 
     def tail(self):
-        next(self.xs)
-        return Stream(self.xs)
+        return self.drop(1)
 
     def map(self, f: Callable[[A], B]) -> 'Stream[B]':
         return Stream(map(f, self.xs))
@@ -36,7 +44,7 @@ class Stream(Generic[A]):
     def reduce(self, f: Callable[[A, 'Stream[B]'], 'B']) -> 'B':
         return reduce(f, self.xs)
 
-    def concat(self, ys):
+    def chain(self, ys):
         return Stream(chain(self.xs, ys))
 
     def take(self, n: int) -> 'Stream[A]':
@@ -94,13 +102,23 @@ class Stream(Generic[A]):
     def all(self):
         return all(self.xs)
 
-    def count(self):
+    def quantify(self):
         return sum(1 for _ in self.xs)
 
+    def zip(self, ys):
+        return Stream(zip(self.xs, ys))
 
-if __name__ == '__main__':
-    print(Stream.of(1, 2, 3).concat(Stream.of(4, 5, 6)).collect(list))
-    print(Stream.of(1, 2, 3).reduce(max))
-    print(Stream.of(1, 2, 3).count())
-    print(Stream.of(1, 2, 3).max())
-    print(Stream.of(1, 5, 2, 2).distinct().collect(list))
+    def zip_longest(self, ys, fillvalue=None):
+        return Stream(zip_longest(self.xs, ys, fillvalue=fillvalue))
+
+    def tee(self, n=2):
+        return Stream(Stream(g) for g in tee(self.xs, n))
+
+    def partition(self, p):
+        t1, t2 = self.tee()
+        return Stream(filterfalse(p, t1)), Stream(filter(p, t2))
+
+    def grouper(self, n, fillvalue=None):
+        args = [iter(self)] * n
+        return Stream(Stream(g) for g in
+                      zip_longest(*args, fillvalue=fillvalue))
