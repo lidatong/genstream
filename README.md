@@ -1,5 +1,29 @@
 # genstream
 
+## Quickstart
+
+`pip install genstream`
+
+```python
+from genstream.stream import Stream
+
+
+def main():
+    a_list_containing_four = (
+        Stream.of(1, 2, 3)
+            .map(lambda x: x * 2)
+            .take(2)
+            .tail()
+            .collect(list)
+    )
+    print(a_list_containing_four)
+
+
+if __name__ == '__main__':
+    main()
+```
+
+
 ## Soapbox
 While generators are one of Python's best and most distinctive language features, I personally find it tiresome to read 
 generator code that undergoes successive transformations. The `(x for x in xs)` pattern has a low signal-to-noise ratio, 
@@ -17,8 +41,9 @@ prefer the infix method syntax, which I find quite concise and readable.
 ## Example of reading lines from many large files without running out of memory
 
 ```python
+# Located under examples/concat_files.py
 import os
-from stream import Stream
+from genstream.stream import Stream
 
 
 def read_lines_in_file(filename):
