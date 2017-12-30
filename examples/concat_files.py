@@ -1,5 +1,5 @@
 import os
-from stream import Stream
+from genstream.stream import Stream
 
 
 def read_lines_in_file(filename):
