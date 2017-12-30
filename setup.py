@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="genstream",
-    version="0.0.2",
+    version="0.0.3",
     packages=find_packages(exclude=("tests*",)),
     author="lidatong",
     description="Construct stream pipelines backed by generators",
