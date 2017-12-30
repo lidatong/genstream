@@ -35,8 +35,8 @@ as the ordering is inconsistent across functions (especially when the parameteri
 
 genstream provides a `Stream` structure that aims to address these two nits. It provides the familiar method chaining syntax
 (enabled by methods like `map`, `filter`, etc.) that you encounter in many other languages. While I agree with
-the python community consensus that `map(f, xs)` is less readable than `(f(x) for x in xs)`. But how about `xs.map(f)`? I
-prefer the infix method syntax, which I find quite concise and readable.
+the python community consensus that `map(f, xs)` is less readable than `(f(x) for x in xs)`, how about `xs.map(f)`? I
+prefer the infix method syntax when sequencing operations on a group of elements, as I find it more concise and readable.
 
 ## Example of reading lines from many large files without running out of memory
 
