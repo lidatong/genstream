@@ -1,3 +1,4 @@
+# Located under examples/concat_files.py
 import os
 from genstream.stream import Stream
 
@@ -26,8 +27,8 @@ def concat_files_gen(dirname):
         yield from read_lines_in_file(fname)
 
 
-# a more concise way, but perhaps less readable
-# `sorted(os.listdir(dirname))` is very dense
+# A more concise way, but perhaps less readable
+# In particular, `sorted(os.listdir(dirname))` is very dense
 def concat_files_concise(dirname):
     for fname in sorted(os.listdir(dirname)):
         yield from read_lines_in_file(f"{dirname}/{fname}")
