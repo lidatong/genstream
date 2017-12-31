@@ -22,10 +22,6 @@ class Stream(Generic[A]):
     def __iter__(self) -> Iterable[A]:
         yield from self._xs
 
-    @staticmethod
-    def of(*args: A):
-        return Stream(args)
-
     def head(self):
         return next(self._xs)
 
