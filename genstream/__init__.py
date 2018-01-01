@@ -1,1 +1,1 @@
-from genstream import Stream
+from genstream.stream import Stream
