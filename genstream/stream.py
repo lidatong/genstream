@@ -86,8 +86,8 @@ class Stream(Generic[A]):
 
     # Terminal operations
 
-    def collect(self, to: Callable[[Iterable[A]], Iterable[A]]) -> Iterable[A]:
-        return to(self._xs)
+    def to(self, f: Callable[[Iterable[A]], Iterable[A]]) -> Iterable[A]:
+        return f(self._xs)
 
     def sum(self):
         return sum(self._xs)
@@ -118,3 +118,4 @@ class Stream(Generic[A]):
         args = [iter(self)] * n
         return Stream(Stream(g) for g in
                       zip_longest(*args, fillvalue=fillvalue))
+
