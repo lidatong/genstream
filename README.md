@@ -29,14 +29,14 @@ While generators are one of Python's best and most distinctive language features
 generator code that undergoes successive transformations. The `(x for x in xs)` pattern has a low signal-to-noise ratio, 
 especially when it spans across many lines. Can the repetition be abstracted away?
 
-The `itertools` module is another pain point: the module is fantastic and useful, but I don't like the two argument nature of
+The `itertools` module is another pain point: the module is very useful, but I don't like the two argument nature of
 many of the provided functions. I'm always trying to remember which goes first, the parameterization or the iterable,
-as the ordering is inconsistent across functions (especially when the parameterization is optional).
+as the ordering is inconsistent across functions (e.g. compare `take` with `map`)`.
 
-genstream provides a `Stream` structure that aims to address these two nits. It provides the familiar method chaining syntax
-(enabled by methods like `map`, `filter`, etc.) that you encounter in many other languages. While I agree with
+**genstream** provides a `Stream` structure that aims to address these two nits. It provides the infix method chaining syntax
+(`.map`, `.filter`, etc.) found in many other programming languages. While I agree with
 the python community consensus that `map(f, xs)` is less readable than `(f(x) for x in xs)`, how about `xs.map(f)`? I
-prefer the infix method syntax when sequencing operations on a group of elements, as I find it more concise and readable.
+prefer method syntax when sequencing many operations on an iterable.
 
 ## Example of reading lines from many large files without running out of memory
 
