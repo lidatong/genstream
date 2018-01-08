@@ -15,7 +15,7 @@ B = TypeVar("B")
 class Stream(Generic[A]):
     def __init__(self, *args):
         if len(args) == 1 and isinstance(args[0], Iterable):
-            self._xs = args[0]
+            self._xs = iter(args[0])
         else:
             self._xs = iter(args)
 
@@ -118,4 +118,3 @@ class Stream(Generic[A]):
         args = [iter(self)] * n
         return Stream(Stream(g) for g in
                       zip_longest(*args, fillvalue=fillvalue))
-

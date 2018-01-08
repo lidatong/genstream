@@ -1,4 +1,5 @@
 from genstream import Stream
+from typing import Iterator
 
 
 class TestInit:
@@ -7,6 +8,10 @@ class TestInit:
 
     def test_varargs(self):
         assert Stream(1, 2, 3).to(list) == [1, 2, 3]
+
+    def test_xs_is_iterator(self):
+        assert isinstance(Stream([1, 2, 3])._xs, Iterator)
+        assert isinstance(Stream(1, 2, 3)._xs, Iterator)
 
 
 class TestOps:
