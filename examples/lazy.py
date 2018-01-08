@@ -21,15 +21,16 @@ def is_even(x):
     return x % 2 == 0
 
 
-xs = (
-    Stream(1, 2, 3)
-        .map(timestwo)
-        .filter(is_even)
-        .take(2)
-        .tail()
-    # .collect(list)
-)
+def main():
+    xs = (
+        Stream(1, 2, 3)
+            .map(timestwo)
+            .filter(is_even)
+            .take(2)
+            .tail()
+    )
+    xs.to(list)
 
-x, y, z = Stream(1, 2, 3)
-print(x, y, z)
 
+if __name__ == '__main__':
+    main()
