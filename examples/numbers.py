@@ -7,7 +7,7 @@ def main():
             .map(lambda x: x * 2)
             .take(2)
             .tail()
-            .to(list) # prints [4]
+            .to(list)  # prints [4]
     )
     print(a_list_containing_four)
 

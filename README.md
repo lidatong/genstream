@@ -87,10 +87,10 @@ if __name__ == '__main__':
 ```
 
 ## Note on implementation
-Given a particular set of primitive operations (e.g. init and reduce), it is
-possible to derive almost all stream ops in terms of one another.
+Given a particular set of primitive operations (e.g. `__init__` and `reduce`),
+it is possible to derive almost all stream ops in terms of one another.
 
-However, the implementation of `Stream` instead makes calls to a corresponding
+However, the methods on `Stream` instead make calls to a corresponding
 `itertools` function whenever possible. This is primarily for performance
-reasons: itertools is a highly-optimized module written in C.
+reasons: itertools is a highly-optimized module implemented in C.
 
