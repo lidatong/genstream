@@ -76,6 +76,24 @@ class Stream(Generic[A]):
     def dropwhile(self, p: Callable[[A], bool]) -> 'Stream[A]':
         return Stream(dropwhile(p, self._xs))
 
+    def zip(self, ys):
+        return Stream(zip(self._xs, ys))
+
+    def zip_longest(self, ys, fillvalue=None):
+        return Stream(zip_longest(self._xs, ys, fillvalue=fillvalue))
+
+    def tee(self, n=2):
+        return Stream(Stream(g) for g in tee(self._xs, n))
+
+    def partition(self, p):
+        t1, t2 = self.tee()
+        return Stream(filterfalse(p, t1)), Stream(filter(p, t2))
+
+    def grouper(self, n, fillvalue=None):
+        args = [iter(self)] * n
+        return Stream(Stream(g) for g in
+                      zip_longest(*args, fillvalue=fillvalue))
+
     # Key functions are provided in situations in which adding a preceding .map
     # would not result in the same transformation
 
@@ -115,21 +133,3 @@ class Stream(Generic[A]):
 
     def quantify(self):
         return sum(1 for _ in self._xs)
-
-    def zip(self, ys):
-        return Stream(zip(self._xs, ys))
-
-    def zip_longest(self, ys, fillvalue=None):
-        return Stream(zip_longest(self._xs, ys, fillvalue=fillvalue))
-
-    def tee(self, n=2):
-        return Stream(Stream(g) for g in tee(self._xs, n))
-
-    def partition(self, p):
-        t1, t2 = self.tee()
-        return Stream(filterfalse(p, t1)), Stream(filter(p, t2))
-
-    def grouper(self, n, fillvalue=None):
-        args = [iter(self)] * n
-        return Stream(Stream(g) for g in
-                      zip_longest(*args, fillvalue=fillvalue))
