@@ -86,6 +86,27 @@ if __name__ == '__main__':
     main()
 ```
 
+## Example using Stream's symbolic operators
+
+```python
+from functools import partial
+from itertools import count
+from operator import add
+
+from genstream import Stream
+
+
+def main():
+    add_one = partial(add, 1)
+    xs = Stream(count(0))  # infinite stream counting from 0
+    one_thru_five = xs[:5] | add_one > list
+    print(one_thru_five)
+
+
+if __name__ == '__main__':
+    main()
+```
+
 ## Note on implementation
 Given a particular set of primitive operations (e.g. `__init__` and `reduce`),
 it is possible to derive almost all stream ops in terms of one another.
