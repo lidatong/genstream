@@ -26,6 +26,20 @@ class Stream(Generic[A]):
     def __iter__(self) -> Iterable[A]:
         yield from self._xs
 
+    def __add__(self, ys) -> 'Stream[A]':
+        return self.concat(ys)
+
+    def __or__(self, f: Callable[[A], B]) -> 'Stream[B]':
+        return self.map(f)
+
+    def __gt__(self, f: Callable[[Iterable[A]], Iterable[A]]) -> Iterable[A]:
+        return self.to(f)
+
+    def __getitem__(self, i):
+        if isinstance(i, slice):
+            return self.slice(i.start, i.stop, i.step)
+        raise TypeError("'stream' object only supports slice operations")
+
     def head(self):
         return next(self._xs)
 
@@ -44,8 +58,11 @@ class Stream(Generic[A]):
     def reduce(self, f: Callable[[A, 'Stream[B]'], 'B']) -> 'B':
         return reduce(f, self._xs)
 
-    def chain(self, ys):
+    def concat(self, ys):
         return Stream(chain(self._xs, ys))
+
+    def slice(self, start: int, stop: int, step: int) -> 'Stream[A]':
+        return Stream(islice(self._xs, start, stop, step))
 
     def take(self, n: int) -> 'Stream[A]':
         return Stream(islice(self._xs, n))
