@@ -12,6 +12,10 @@ A = TypeVar("A")
 B = TypeVar("B")
 
 
+def _identity(x):
+    return x
+
+
 class Stream(Generic[A]):
     def __init__(self, *args):
         if len(args) == 1 and isinstance(args[0], Iterable):
@@ -55,32 +59,26 @@ class Stream(Generic[A]):
     def dropwhile(self, p: Callable[[A], bool]) -> 'Stream[A]':
         return Stream(dropwhile(p, self._xs))
 
-    # Key functions reserved for situations in which a preceding .map to the op
-    # would not evaluate to the same result
+    # Key functions are provided in situations in which adding a preceding .map
+    # would not result in the same transformation
 
-    def sort(self, key=None):
+    def sort(self, key=_identity):
         return Stream(sorted(self._xs, key=key))
 
-    # built-ins max/min don't handle key=None properly
-
-    def max(self, key=None):
-        key = (lambda x: x) if key is None else key
+    def max(self, key=_identity):
         return Stream(max(self._xs, key=key))
 
-    def min(self, key=None):
-        key = (lambda x: x) if key is None else key
+    def min(self, key=_identity):
         return Stream(min(self._xs, key=key))
 
-    def distinct(self, key=None):
-        key = (lambda x: x) if key is None else key
-
+    def unique(self, key=_identity):
         def g():
             S = set()
             for x in self._xs:
-                key_x = key(x)
-                if key_x not in S:
+                kx = key(x)
+                if kx not in S:
+                    S.add(kx)
                     yield x
-                S.add(key_x)
 
         return Stream(g())
 
