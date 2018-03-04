@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="genstream",
-    version="0.0.8",
+    version="0.0.9",
     packages=find_packages(exclude=("tests*",)),
     author="lidatong",
     author_email="charles.dt.li@gmail.com",
