@@ -1,3 +1,4 @@
+from __future__ import annotations
 from itertools import (takewhile,
                        dropwhile,
                        chain,
@@ -17,19 +18,23 @@ def _identity(x):
 
 
 class Stream(Generic[A]):
-    def __init__(self, *args):
-        if len(args) == 1 and isinstance(args[0], Iterable):
-            self._xs = iter(args[0])
-        else:
-            self._xs = iter(args)
+    def __init__(self, it):
+        self._xs = iter(it)
+
+    @staticmethod
+    def of(*args):
+        return Stream(args)
 
     def __iter__(self) -> Iterable[A]:
         yield from self._xs
 
-    def __add__(self, ys) -> 'Stream[A]':
+    def __add__(self, ys) -> Stream[A]:
         return self.concat(ys)
 
-    def __or__(self, f: Callable[[A], B]) -> 'Stream[B]':
+    def __radd__(self, ys) -> Stream[A]:
+        return self.concatleft(ys)
+
+    def __or__(self, f: Callable[[A], B]) -> Stream[B]:
         return self.map(f)
 
     def __gt__(self, f: Callable[[Iterable[A]], Iterable[A]]) -> Iterable[A]:
@@ -46,34 +51,43 @@ class Stream(Generic[A]):
     def tail(self):
         return self.drop(1)
 
-    def map(self, f: Callable[[A], B]) -> 'Stream[B]':
+    def map(self, f: Callable[[A], B]) -> Stream[B]:
         return Stream(map(f, self._xs))
 
-    def filter(self, p: Callable[[A], bool]) -> 'Stream[A]':
+    def filter(self, p: Callable[[A], bool]) -> Stream[A]:
         return Stream(filter(p, self._xs))
 
-    def bind(self, f: Callable[[A], 'Stream[B]']) -> 'Stream[B]':
+    def bind(self, f: Callable[[A], Stream[B]]) -> Stream[B]:
         return Stream(chain.from_iterable(map(f, self._xs)))
 
-    def reduce(self, f: Callable[[A, 'Stream[B]'], 'B']) -> 'B':
+    def reduce(self, f: Callable[[B, A], B]) -> B:
         return reduce(f, self._xs)
+
+    def foldleft(self, z: B, f: Callable[[B, A], B]) -> B:
+        return reduce(f, self._xs, z)
+
+    def foldright(self, z: B, f: Callable[[A, B], B]) -> B:
+        return reduce(lambda b, a: f(a, b), self._xs, z)
 
     def concat(self, ys):
         return Stream(chain(self._xs, ys))
 
-    def slice(self, start: int, stop: int, step: int) -> 'Stream[A]':
+    def concatleft(self, ys):
+        return Stream(chain(ys, self._xs))
+
+    def slice(self, start: int, stop: int, step: int) -> Stream[A]:
         return Stream(islice(self._xs, start, stop, step))
 
-    def take(self, n: int) -> 'Stream[A]':
+    def take(self, n: int) -> Stream[A]:
         return Stream(islice(self._xs, n))
 
-    def drop(self, n: int) -> 'Stream[A]':
+    def drop(self, n: int) -> Stream[A]:
         return Stream(islice(self._xs, n, None))
 
-    def takewhile(self, p: Callable[[A], bool]) -> 'Stream[A]':
+    def takewhile(self, p: Callable[[A], bool]) -> Stream[A]:
         return Stream(takewhile(p, self._xs))
 
-    def dropwhile(self, p: Callable[[A], bool]) -> 'Stream[A]':
+    def dropwhile(self, p: Callable[[A], bool]) -> Stream[A]:
         return Stream(dropwhile(p, self._xs))
 
     def zip(self, ys):

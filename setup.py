@@ -10,7 +10,7 @@ setup(
     url="https://github.com/lidatong/genstream",
     license="Unlicense",
     keywords="chaining chain generators piping pipes transformations",
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     extras_require={
         "dev": ["pytest"]
     },
